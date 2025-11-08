@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="null" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="41ad1e64-50b4-44be-bcb9-3f1f4a443a6f">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<queryString language="SQL">
+		<![CDATA[SELECT
+     EMPLEADOS."IDEMPLEADO" AS EMPLEADOS_IDEMPLEADO,
+     EMPLEADOS."NOMBRE" AS EMPLEADOS_NOMBRE,
+     EMPLEADOS."APELLIDOS" AS EMPLEADOS_APELLIDOS,
+     EMPLEADOS."EMAIL" AS EMPLEADOS_EMAIL,
+     EMPLEADOS."USUARIO" AS EMPLEADOS_USUARIO,
+     EMPLEADOS."CLAVE" AS EMPLEADOS_CLAVE
+FROM
+     "EMPRESA"."EMPLEADOS" EMPLEADOS]]>
+	</queryString>
+	<field name="EMPLEADOS_IDEMPLEADO" class="java.lang.String"/>
+	<field name="EMPLEADOS_NOMBRE" class="java.lang.String"/>
+	<field name="EMPLEADOS_APELLIDOS" class="java.lang.String"/>
+	<field name="EMPLEADOS_EMAIL" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="79" splitType="Stretch">
+			<staticText>
+				<reportElement x="82" y="16" width="399" height="61" uuid="ec750407-9491-47d8-96b4-09584874dda5"/>
+				<textElement>
+					<font size="36"/>
+				</textElement>
+				<text><![CDATA[LISTA DE EMPLEADOS]]></text>
+			</staticText>
+			<image>
+				<reportElement x="11" y="18" width="71" height="59" uuid="efec221b-caf1-4ba2-b3f2-bec184457f76"/>
+				<imageExpression><![CDATA["C:\\Semana03\\AppEmpresa\\src\\uni\\reportes\\coffee.jpg"]]></imageExpression>
+			</image>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="35" splitType="Stretch">
+			<textField pattern="dd/MM/yyyy">
+				<reportElement x="25" y="0" width="100" height="20" uuid="9bbbc68c-016f-4239-9ccf-bc63e934c4f9"/>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<textField pattern="h.mm.ss a">
+				<reportElement x="415" y="0" width="100" height="20" uuid="332e2492-c76c-4eda-bde1-2b3a592d2b5a"/>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="61" splitType="Stretch">
+			<staticText>
+				<reportElement x="25" y="41" width="100" height="20" uuid="4f4c8f83-bcd1-4cea-b2ae-54289acbe41d"/>
+				<text><![CDATA[CODIGO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="154" y="41" width="100" height="20" uuid="d782806e-f0ed-4773-ab10-674607e8400e"/>
+				<text><![CDATA[NOMBRES]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="270" y="41" width="100" height="20" uuid="b9e99ad7-0f72-4f30-9ff5-0a48ffcc6b50"/>
+				<text><![CDATA[APELLIDOS]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="415" y="41" width="100" height="20" uuid="60b1aa55-ccca-4bfe-810d-71352e5d9b29"/>
+				<text><![CDATA[EMAIL]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="39" splitType="Stretch">
+			<textField>
+				<reportElement x="25" y="6" width="100" height="20" uuid="599bea55-626f-4e88-8ac1-29c48ee8853c"/>
+				<textFieldExpression><![CDATA[$F{EMPLEADOS_IDEMPLEADO}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="154" y="6" width="100" height="20" uuid="56cdde78-e088-48c9-8932-100710dfb896"/>
+				<textFieldExpression><![CDATA[$F{EMPLEADOS_NOMBRE}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="270" y="6" width="100" height="20" uuid="ecf22aee-44a0-44b3-ac92-279c458af62a"/>
+				<textFieldExpression><![CDATA[$F{EMPLEADOS_APELLIDOS}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="415" y="6" width="100" height="20" uuid="e998d0c6-c72c-43b6-b256-39b9b129722c"/>
+				<textFieldExpression><![CDATA[$F{EMPLEADOS_EMAIL}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="45" splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="54" splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="42" splitType="Stretch"/>
+	</summary>
+</jasperReport>

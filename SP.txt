@@ -1,0 +1,81 @@
+--- sp insertar empleado--
+
+create or replace procedure USP_PROVEEDOR_INSERT
+(p_idprov IN CHAR,
+p_raz IN VARCHAR2,
+p_dir IN VARCHAR2,
+p_ruc IN VARCHAR2,
+p_tel IN VARCHAR2)
+is
+begin
+insert into proveedores
+ values(p_idprov,p_raz,p_dir,p_ruc,p_tel);
+end usp_proveedor_insert;
+   
+
+--prueba--
+
+begin
+usp_empleado_insert('E0006','Julio','Flores','jflores@hotmail.com','jflores','lobito');
+end;
+
+begin
+usp_PROVEEDOR_insert('P0011','FONCO','CASA','20122','545454');
+end;
+
+--sp actualiza empleado--
+
+create or replace procedure usp_proveedor_modificar
+(p_idprov IN CHAR,
+p_raz IN VARCHAR2,
+p_dir IN VARCHAR2,
+p_ruc IN VARCHAR2,
+p_tel IN VARCHAR2)
+is
+begin
+update proveedores set razonsocial=p_raz,direccion=p_dir,ruc=p_ruc,telefono=p_tel
+where idproveedor=p_idprov;
+end usp_proveedor_modificar;
+
+
+--prueba--
+
+begin
+usp_empleado_modificar('E0007','Manuel','Martinez','manuel@gmail.com','manuelito','angelito');
+end;
+
+--sp eliminar--
+
+create or replace procedure usp_proveedor_eliminar
+(p_idprov IN CHAR
+)
+is
+begin
+delete from proveedores where idproveedor=p_idprov;
+end usp_proveedor_eliminar;
+
+-- prueba--
+
+begin
+usp_empleado_eliminar('E0006');
+end;
+
+--sp con parametro de salida--
+
+create or replace procedure USP_PROVEEDOR_INSERTA
+(p_idprov OUT CHAR,
+p_raz IN VARCHAR2,
+p_dir IN VARCHAR2,
+p_ruc IN VARCHAR2,
+p_tel IN VARCHAR2)
+is
+begin
+Select valor into p_idprov from Control where parametro='Proveedores';
+update Control set Valor=valor+1 where parametro='Proveedores';
+insert into Proveedores
+ values(p_idprov,p_raz,p_dir,p_ruc,p_tel);
+end usp_PROVEEDOR_inserta;
+
+--prueba--
+
+
