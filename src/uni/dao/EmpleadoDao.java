@@ -148,7 +148,7 @@ public class EmpleadoDao implements ICrudDao<EmpleadoTo> {
         ps = cn.prepareStatement(sql);
         ps.executeUpdate();
         ps.close();
-        String cod = "";
+        String cod;
         if (cont < 10) {
             cod = "E000" + cont;
         } else {
@@ -162,5 +162,41 @@ public class EmpleadoDao implements ICrudDao<EmpleadoTo> {
         if (cs != null) cs.close();
         if (ps != null) ps.close();
         if (cn != null) cn.close();
+    }
+
+    public String readAll1(String nombre) throws Exception {
+        String codigo;
+        try {
+            cn = AccesoDB.getConnection();
+            sp = "select idempleado from empleados where apellidos=?";
+            ps = cn.prepareStatement(sp);
+            ps.setString(1, nombre);
+            rs = ps.executeQuery();
+            rs.next();
+            codigo = rs.getString(1);
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            cerrarRecursos();
+        }
+        return codigo;
+    }
+
+    public boolean valida(String usu, String pas) throws Exception {
+        boolean sw = false;
+        try {
+            cn = AccesoDB.getConnection();
+            sp = "select * from empleados where usuario=? and clave=?";
+            ps = cn.prepareStatement(sp);
+            ps.setString(1, usu);
+            ps.setString(2, pas);
+            rs = ps.executeQuery();
+            sw = rs.next();
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            cerrarRecursos();
+        }
+        return sw;
     }
 }
