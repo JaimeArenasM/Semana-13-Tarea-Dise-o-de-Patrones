@@ -13,22 +13,20 @@ import uni.service.ICrudDao;
 
 public class EmpleadoDao implements ICrudDao<EmpleadoTo> {
 
-    //variables
-    Connection cn = null;
-    CallableStatement cs = null;
-    PreparedStatement ps = null;
-    ResultSet rs = null;
-    String sp = "";
+    private Connection cn = null;
+    private CallableStatement cs = null;
+    private PreparedStatement ps = null;
+    private ResultSet rs = null;
+    private String sp = "";
 
     @Override
     public void create(EmpleadoTo o) throws Exception {
         try {
             cn = AccesoDB.getConnection();
-            //activar el inicio de la transaccion
             cn.setAutoCommit(false);
             String cod = generaCodigo();
             o.setIdempleado(cod);
-            sp = "{call sp_Empleado_Adicionar(?,?,?,?,?,?)}";
+            sp = "{call sp_insertar_empleado(?,?,?,?,?,?)}";
             cs = cn.prepareCall(sp);
             cs.setString(1, o.getIdempleado());
             cs.setString(2, o.getNombre());
@@ -37,16 +35,12 @@ public class EmpleadoDao implements ICrudDao<EmpleadoTo> {
             cs.setString(5, o.getUsuario());
             cs.setString(6, o.getClave());
             cs.executeUpdate();
-            cs.close();
-            cn.commit();//confirma que la transaccion se realizado ok
-        } catch (SQLException | ClassNotFoundException | InstantiationException | IllegalAccessException e) {
-            try {
-                cn.rollback();
-            } catch (Exception e1) {
-            }
+            cn.commit();
+        } catch (Exception e) {
+            if (cn != null) cn.rollback();
             throw e;
         } finally {
-            cn.close();
+            cerrarRecursos();
         }
     }
 
@@ -54,9 +48,8 @@ public class EmpleadoDao implements ICrudDao<EmpleadoTo> {
     public void update(EmpleadoTo o) throws Exception {
         try {
             cn = AccesoDB.getConnection();
-            //activar el inicio de la transaccion
             cn.setAutoCommit(false);
-            sp = "{call sp_Empleado_Actualizar(?,?,?,?,?,?)}";
+            sp = "{call sp_actualizar_empleado(?,?,?,?,?,?)}";
             cs = cn.prepareCall(sp);
             cs.setString(1, o.getIdempleado());
             cs.setString(2, o.getNombre());
@@ -65,16 +58,12 @@ public class EmpleadoDao implements ICrudDao<EmpleadoTo> {
             cs.setString(5, o.getUsuario());
             cs.setString(6, o.getClave());
             cs.executeUpdate();
-            cs.close();
-            cn.commit();//confirma que la transaccion se realizado ok
-        } catch (SQLException | ClassNotFoundException | InstantiationException | IllegalAccessException e) {
-            try {
-                cn.rollback();
-            } catch (Exception e1) {
-            }
+            cn.commit();
+        } catch (Exception e) {
+            if (cn != null) cn.rollback();
             throw e;
         } finally {
-            cn.close();
+            cerrarRecursos();
         }
     }
 
@@ -82,28 +71,44 @@ public class EmpleadoDao implements ICrudDao<EmpleadoTo> {
     public void delete(EmpleadoTo o) throws Exception {
         try {
             cn = AccesoDB.getConnection();
-            //activar el inicio de la transaccion
             cn.setAutoCommit(false);
-            sp = "{call sp_Empleado_Eliminar(?)}";
+            sp = "{call sp_eliminar_empleado(?)}";
             cs = cn.prepareCall(sp);
             cs.setString(1, o.getIdempleado());
             cs.executeUpdate();
-            cs.close();
-            cn.commit();//confirma que la transaccion se realizado ok
-        } catch (SQLException | ClassNotFoundException | InstantiationException | IllegalAccessException e) {
-            try {
-                cn.rollback();
-            } catch (Exception e1) {
-            }
+            cn.commit();
+        } catch (Exception e) {
+            if (cn != null) cn.rollback();
             throw e;
         } finally {
-            cn.close();
+            cerrarRecursos();
         }
     }
 
     @Override
     public EmpleadoTo find(Object o) throws Exception {
-        return null;
+        EmpleadoTo emp = null;
+        try {
+            cn = AccesoDB.getConnection();
+            sp = "{call sp_buscar_empleado(?)}";
+            cs = cn.prepareCall(sp);
+            cs.setString(1, o.toString());
+            rs = cs.executeQuery();
+            if (rs.next()) {
+                emp = new EmpleadoTo();
+                emp.setIdempleado(rs.getString("idempleado"));
+                emp.setNombre(rs.getString("nombre"));
+                emp.setApellidos(rs.getString("apellidos"));
+                emp.setEmail(rs.getString("email"));
+                emp.setUsuario(rs.getString("usuario"));
+                emp.setClave(rs.getString("clave"));
+            }
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            cerrarRecursos();
+        }
+        return emp;
     }
 
     @Override
@@ -111,16 +116,23 @@ public class EmpleadoDao implements ICrudDao<EmpleadoTo> {
         List<EmpleadoTo> lista = new ArrayList<>();
         try {
             cn = AccesoDB.getConnection();
-            String sql = "select * from empleados";
-            ps = cn.prepareStatement(sql);
-            rs = ps.executeQuery();
-            lista = cargaLista(rs);
-            rs.close();
-            ps.close();
-        } catch (SQLException | ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+            sp = "{call sp_listar_empleados}";
+            cs = cn.prepareCall(sp);
+            rs = cs.executeQuery();
+            while (rs.next()) {
+                EmpleadoTo e = new EmpleadoTo();
+                e.setIdempleado(rs.getString("idempleado"));
+                e.setNombre(rs.getString("nombre"));
+                e.setApellidos(rs.getString("apellidos"));
+                e.setEmail(rs.getString("email"));
+                e.setUsuario(rs.getString("usuario"));
+                e.setClave(rs.getString("clave"));
+                lista.add(e);
+            }
+        } catch (Exception e) {
             throw e;
         } finally {
-            cn.close();
+            cerrarRecursos();
         }
         return lista;
     }
@@ -145,60 +157,10 @@ public class EmpleadoDao implements ICrudDao<EmpleadoTo> {
         return cod;
     }
 
-    private List<EmpleadoTo> cargaLista(ResultSet rs) throws SQLException {
-        List<EmpleadoTo> aux = new ArrayList<>();
-        while (rs.next()) {
-            EmpleadoTo em = new EmpleadoTo();
-            em.setIdempleado(rs.getString(1));
-            em.setNombre(rs.getString(2));
-            em.setApellidos(rs.getString(3));
-            em.setEmail(rs.getString(4));
-            aux.add(em);
-        }
-        rs.close();
-        return aux;
+    private void cerrarRecursos() throws SQLException {
+        if (rs != null) rs.close();
+        if (cs != null) cs.close();
+        if (ps != null) ps.close();
+        if (cn != null) cn.close();
     }
-    
-    public String readAll1(String nombre) throws Exception {
-        String codigo;
-        try {
-            cn = AccesoDB.getConnection();
-            sp = "select idempleado from empleados where apellidos=?";
-            ps = cn.prepareStatement(sp);
-            ps.setString(1, nombre);
-            rs = ps.executeQuery();
-            rs.next();
-            codigo = rs.getString(1);
-            rs.close();
-            ps.close();
-        } catch (SQLException | ClassNotFoundException | InstantiationException | IllegalAccessException e) {
-            throw e;
-        } finally {
-            cn.close();
-        }
-        return codigo;
-    }
-    
-     public boolean valida(String usu, String pas) throws Exception {
-        boolean sw=false;
-        try {
-            cn = AccesoDB.getConnection();
-            sp = "select * from empleados where usuario=? and clave=?";
-            ps = cn.prepareStatement(sp);
-            ps.setString(1, usu);
-            ps.setString(2, pas);
-            rs = ps.executeQuery();
-            sw = rs.next();
-            rs.close();
-            ps.close();
-        } catch (Exception e) {
-            throw e;
-        } finally {
-            cn.close();
-        }
-        return sw;//que puede ser verdadero o falso
-    }
-
-
-
 }
